@@ -1,0 +1,100 @@
+
+fold: 0
+name: dino_256_auxdec1024_${fold}
+output_dir: logs/prostnfound/dino_pca/${name}
+chkpt_dir: /${oc.env:CHECKPOINT}/dino_pca/${oc.env:JOB_ID}/${name}
+flip_ud: False
+freeze_encoder: False
+
+data:
+  root_dir: /datasets/exactvu_pca/OPTIMUM/processed/UA_annotated_needles #/datasets/exactvu_pca/OPTIMUM/UA_OL_PU_annotated_needles_multiframe #
+  fold: ${fold}
+  n_folds: 5
+  test_center: null
+  exclude_benign_cores_from_positive_patients: true
+  involvement_threshold_pct: null
+  undersample_benign_ratio: null
+  cohort_selection_mode: kfold
+  dataset: default
+  batch_size: 12
+  num_workers: 8
+  train_subsample_seed: 42
+  augmentations: translate,random_crop
+  image_size: 256 #512 #768
+  first_downsample_size: null
+  mask_size: 64 #128 #768
+  limit_train_data: null
+  mean: [0, 0, 0] #[0.485, 0.456, 0.406]  # ← CHANGED
+  std: [1, 1, 1] #[0.229, 0.224, 0.225] # ← CHANGED
+  flip_ud: ${flip_ud}
+  frames: first
+  crop_to_prostate: false
+  rf_as_bmode: false
+  include_rf: false
+
+model:
+  name: unetr_generic
+  backbone_cfg:
+    name: dinov3_backbone_wrapper_for_feature_maps_list #/data/scratch/users/obed/1818/eval/training_49999/teacher_checkpoint.pth
+    backbone_cfg:
+      name: dinov3_vitl16 #dinov3_backbone_from_checkpoint
+      # config_path: /data/scratch/users/obed/dinov3_ssl/1818/config.yaml #/home/obed/scratch/1471034/config.yaml
+      # checkpoint_path: /data/scratch/users/obed/dinov3_ssl/1818/eval/training_49999/teacher_checkpoint.pth #/home/obed/scratch/1471034/eval/training_37499/teacher_checkpoint.pth
+      pretrained: true
+  embedding_size: 1024
+  backbone_out_format: bchw
+  input_size: 256 #512 #768
+  output_size: 256 #512 #768
+  interaction_indices:
+  - 4
+  - 11
+  - 17
+  - 23
+
+model_kw:
+  dino_embedding_dim: 1024
+  use_class_decoder: true
+  floating_point_prompts: [] #["age", "psa", "approx_psa_density"]
+  aux_decoder_dim: 1024 #512
+
+loss: mil_prop_bce_entropy_reg
+pos_weight: 8.0
+treat_gg1_as_benign: false
+outside_prostate_penalty: false
+add_image_clf: true
+image_clf_mode: cspca
+add_image_clf_high_vs_low_grade: false
+optimizer: adamw
+lr: 1.0e-05
+encoder_lr: 1.0e-05
+warmup_lr: 0.0001
+cnn_lr: 1.0e-05
+warmup_epochs: 0
+wd: 0.01
+epochs: 35
+accumulate_grad_steps: 1
+cutoff_epoch: null
+run_test: false
+test_every_epoch: false
+run_val: true
+project: miccai2024_comparison
+seed: 30
+tracked_metric: val/auc
+save_checkpoint_wandb: false
+torch_compile: true
+use_amp: false
+device: cuda
+checkpoint_dir: ${chkpt_dir}
+model_checkpoint: null #/home/obed/scratch/ttt_pca/2395674/best.pth #null
+debug: false
+save_best_weights: True
+evaluator:
+  log_images: true
+  log_images_every: 100
+wandb:
+  name: ${name}
+  project: dino_pca
+  group: ${name}
+job_id: 0
+
+

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proside-dino-pca"
+version = "0.1.0"
+description = "Prostate cancer detection from ultrasound: Proside/UNETR-CNN decoders over a frozen DINOv3 backbone"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = ["medAI*", "dino_pca*", "external_libs*", "projects*"]
