@@ -1,7 +1,7 @@
 # proside-dino-pca
 
 Prostate cancer detection from transrectal micro-ultrasound, built on a
-frozen [DINOv3](https://github.com/facebookresearch/dinov3) backbone. This
+fine-tuned [DINOv3](https://github.com/facebookresearch/dinov3) backbone. This
 compares two decoder paths for turning DINOv3 features into a per-pixel
 cancer heatmap:
 
@@ -14,10 +14,10 @@ Both support an optional clinical-metadata "prompts" conditioning signal
 (patient age, PSA, approximate PSA density) fed into the decoder as a
 sparse embedding.
 
-This repo is a standalone extraction of the `dino_pca` project from a
-larger private research monorepo (`medAI`). It vendors only the subset of
-that monorepo's shared library actually needed to run `dino_pca` — see
-"What's vendored" below.
+This repo is an extraction of the `dino_pca` project from a larger private
+research monorepo (`medAI`). It vendors only the subset of that monorepo's
+shared library actually needed to run `dino_pca` — see "What's vendored"
+below.
 
 ## Install
 
